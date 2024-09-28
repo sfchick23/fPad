@@ -9,6 +9,7 @@
 <?import javafx.scene.text.Font?>
 
 
+<?import javafx.scene.text.Text?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="700.0" style="-fx-background-color: #222222;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.fpada.Controller">
 
@@ -18,7 +19,8 @@
             <Font size="26.0" />
          </font>
       </Label>
-      <ProgressBar fx:id="soundProgressBar" layoutX="36.0" layoutY="244.0" prefHeight="6.0" prefWidth="628.0" progress="0.0" />
+      <ProgressBar fx:id="soundProgressBar" onMouseClicked="#handleProgressBarClick" layoutX="36.0" layoutY="233.0" prefHeight="17.0" prefWidth="591.0" progress="0.0" />
+
       <Button fx:id="playButton" layoutX="311.0" layoutY="291.0" mnemonicParsing="false" onAction="#playMedia" text="PLAY">
          <font>
             <Font size="18.0" />
@@ -34,12 +36,17 @@
             <Font size="14.0" />
          </font>
       </Button>
+      <Text fx:id="timerClip" fill="WHITE" layoutX="634.0" layoutY="249.0" strokeType="OUTSIDE" strokeWidth="0.0" text="">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Text>
       <Button fx:id="nextSound" layoutX="406.0" layoutY="291.0" mnemonicParsing="false" onAction="#nextMedia" prefHeight="40.0" prefWidth="90.0" text="NEXT">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <ComboBox fx:id="MusicsBox" layoutX="513.0" layoutY="298.0" prefWidth="150.0" promptText="SPEED" />
-      <Slider fx:id="volumeSound" layoutX="280.0" layoutY="347.0" max="100.0" onDragDetected="#volumeMedia" prefHeight="14.0" prefWidth="126.0" value="50.0" />
+      <ComboBox fx:id="MusicsList" layoutX="513.0" layoutY="298.0" prefHeight="26.0" prefWidth="111.0" promptText="MUSIC LIST" />
+      <Slider fx:id="volumeSound" layoutX="280.0" layoutY="347.0" max="100.0"  prefHeight="14.0" prefWidth="126.0" value="50.0" />
    </children>
 </AnchorPane>

@@ -20,9 +20,10 @@ import javafx.scene.input.MouseEvent;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-
+import javax.sound.sampled.*;
 
 
 public class Controller {
@@ -55,6 +56,9 @@ public class Controller {
     @FXML
     private ComboBox<?> musicsBox;
 
+   @FXML
+   private Text timerClip;
+
     @FXML
     private Slider volumeSound;
 
@@ -67,8 +71,8 @@ public class Controller {
 
     private int songNumber;
     private int[] speeds = {25, 50, 75, 100, 125, 150, 175, 200};
+    private int elapsedTime = 0; // Время в секундах
     private Timer timer;
-    private TimerTask timerTask;
     private boolean running;
     private boolean playing;
 
@@ -108,6 +112,7 @@ public class Controller {
     void playMedia() {
         if (!playing) {
             beginTimer();
+
             mediaPlayer.play();
             mediaPlayer.setVolume(volumeSound.getValue() * 0.01);
             playButton.setText("PAUSE");
@@ -124,6 +129,7 @@ public class Controller {
 
     @FXML
     void nextMedia(ActionEvent event) {
+        soundProgressBar.setProgress(0);
         if (songNumber < songs.size() - 1) {
             songNumber++;
             mediaPlayer.stop();
@@ -158,6 +164,7 @@ public class Controller {
 
     @FXML
     void previousMedia(ActionEvent event) {
+        soundProgressBar.setProgress(0);
         if (songNumber > 0) {
             songNumber--;
             mediaPlayer.stop();
@@ -201,15 +208,18 @@ public class Controller {
 
     public void beginTimer(){
         timer = new Timer();
-        timerTask = new TimerTask() {
+        elapsedTime = 0;
+        TimerTask timerTask = new TimerTask() {
             public void run() {
                 running = true;
+                elapsedTime++;
+
                 double current = mediaPlayer.getCurrentTime().toSeconds();
                 double end = media.getDuration().toSeconds();
                 System.out.println(current / end);
-                soundProgressBar.setProgress(current/end);
-
-                if (current/end == 1){
+                soundProgressBar.setProgress(current / end);
+                timerClip.setText(elapsedTime + "s");
+                if (current / end == 1) {
                     cancelTimer();
                 }
             }
@@ -223,4 +233,13 @@ public class Controller {
         timer.cancel();
     }
 
+    @FXML
+    void handleProgressBarClick(MouseEvent event) {
+        double progressBarWidth = soundProgressBar.getWidth();
+        double clickX = event.getX();
+        double newProgress = clickX / progressBarWidth;
+        soundProgressBar.setProgress(newProgress);
+        Duration newTime = media.getDuration().multiply(newProgress);
+        mediaPlayer.seek(newTime);
+    }
 }

@@ -15,7 +15,7 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("fPad-label.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 700, 450);
-        stage.setTitle("Hello!");
+        stage.setTitle("fPad");
         stage.setScene(scene);
         stage.show();
 
