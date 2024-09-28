@@ -9,6 +9,8 @@ import java.util.TimerTask;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -54,7 +56,7 @@ public class Controller {
     private ProgressBar soundProgressBar;
 
     @FXML
-    private ComboBox<?> musicsBox;
+    private ComboBox<String> musicsList;
 
    @FXML
    private Text timerClip;
@@ -76,7 +78,6 @@ public class Controller {
     private boolean running;
     private boolean playing;
 
-
     @FXML
     void initialize() {
         songs = new ArrayList<File>();
@@ -92,10 +93,19 @@ public class Controller {
             }
         }
 
+
+        for (File file : songs) {
+            musicsList.getItems().add(file.getName());
+        }
+
         media = new Media(songs.get(songNumber).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
 
         soundLabel.setText(songs.get(songNumber).getName());
+
+        mediaPlayer.setOnEndOfMedia(() -> {
+            nextMedia(null);
+        });
 
         volumeSound.valueProperty().addListener(new ChangeListener<Number>() {
 
@@ -130,35 +140,21 @@ public class Controller {
     @FXML
     void nextMedia(ActionEvent event) {
         soundProgressBar.setProgress(0);
+        
         if (songNumber < songs.size() - 1) {
             songNumber++;
-            mediaPlayer.stop();
-
-            if (running) {
-                cancelTimer();
-            }
-
-            media = new Media(songs.get(songNumber).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
-
-            soundLabel.setText(songs.get(songNumber).getName());
-
-            playMedia();
-        }else {
+        } else {
             songNumber = 0;
-            mediaPlayer.stop();
-
-            if (running) {
-                cancelTimer();
-            }
-
-            media = new Media(songs.get(songNumber).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
-
-            soundLabel.setText(songs.get(songNumber).getName());
-
-            playMedia();
         }
+
+        mediaPlayer.stop();
+
+        media = new Media(songs.get(songNumber).toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
+
+        soundLabel.setText(songs.get(songNumber).getName());
+
+        playMedia();
     }
 
 
@@ -167,37 +163,23 @@ public class Controller {
         soundProgressBar.setProgress(0);
         if (songNumber > 0) {
             songNumber--;
-            mediaPlayer.stop();
-
-            if (running) {
-                cancelTimer();
-            }
-
-            media = new Media(songs.get(songNumber).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
-
-            soundLabel.setText(songs.get(songNumber).getName());
-
-            playMedia();
-        }else {
+        } else {
             songNumber = songs.size() - 1;
-            mediaPlayer.stop();
-
-            if (running) {
-                cancelTimer();
-            }
-
-            media = new Media(songs.get(songNumber).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
-
-            soundLabel.setText(songs.get(songNumber).getName());
-
-            playMedia();
         }
+
+        mediaPlayer.stop();
+
+        media = new Media(songs.get(songNumber).toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
+
+        soundLabel.setText(songs.get(songNumber).getName());
+
+        playMedia();
     }
 
     @FXML
     void resetMedia(ActionEvent event) {
+        cancelTimer();
         soundProgressBar.setProgress(0);
 
         mediaPlayer.seek(Duration.seconds(0));
@@ -218,9 +200,15 @@ public class Controller {
                 double end = media.getDuration().toSeconds();
                 System.out.println(current / end);
                 soundProgressBar.setProgress(current / end);
-                timerClip.setText(elapsedTime + "s");
+
+                int minutes = elapsedTime / 60;
+                int seconds = elapsedTime % 60;
+
+                String timeFormatted = String.format("%d:%02d", minutes, seconds);
+                timerClip.setText(timeFormatted);
                 if (current / end == 1) {
                     cancelTimer();
+
                 }
             }
         };
@@ -241,5 +229,29 @@ public class Controller {
         soundProgressBar.setProgress(newProgress);
         Duration newTime = media.getDuration().multiply(newProgress);
         mediaPlayer.seek(newTime);
+    }
+
+    public void handleMusicSelection(ActionEvent event) {
+        String selectedSong = (String) musicsList.getSelectionModel().getSelectedItem();
+
+        // Находим индекс выбранного трека
+        for (int i = 0; i < songs.size(); i++) {
+            if (songs.get(i).getName().equals(selectedSong)) {
+                songNumber = i; // Устанавливаем выбранный трек
+                break;
+            }
+        }
+
+        // Останавливаем текущий трек, если он проигрывается
+        mediaPlayer.stop();
+
+        // Обновляем медиа-плеер для нового трека
+        media = new Media(songs.get(songNumber).toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
+
+        soundLabel.setText(songs.get(songNumber).getName());
+
+        // Начинаем проигрывание нового трека
+        playMedia();
     }
 }

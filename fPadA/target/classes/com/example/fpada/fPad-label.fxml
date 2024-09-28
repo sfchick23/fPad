@@ -46,7 +46,7 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <ComboBox fx:id="MusicsList" layoutX="513.0" layoutY="298.0" prefHeight="26.0" prefWidth="111.0" promptText="MUSIC LIST" />
+      <ComboBox fx:id="musicsList" onAction="#handleMusicSelection" layoutX="513.0" layoutY="298.0" prefHeight="26.0" prefWidth="111.0" promptText="MUSIC LIST" />
       <Slider fx:id="volumeSound" layoutX="280.0" layoutY="347.0" max="100.0"  prefHeight="14.0" prefWidth="126.0" value="50.0" />
    </children>
 </AnchorPane>
